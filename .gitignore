@@ -68,6 +68,7 @@ fabric.properties
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+app.code-workspace
 .history
 
 # End of https://www.gitignore.io/api/intellij+all,visualstudiocode
