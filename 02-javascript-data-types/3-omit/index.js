@@ -5,5 +5,10 @@
  * @returns {object} - returns the new object
  */
 export const omit = (obj, ...fields) => {
-
+    Object.keys(obj).forEach(key => {
+        if (fields.includes(key)) {
+            delete obj[key];
+        }
+    });
+    return obj;
 };
