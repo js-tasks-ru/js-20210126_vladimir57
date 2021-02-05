@@ -4,5 +4,7 @@
  * @returns {function} - function-getter which allow get value from object by set path
  */
 export function createGetter(path) {
-
+    return (obj) => {
+        return path.split('.').reduce((accumulator, current) => { return accumulator?.[current] }, obj);
+    }
 }
