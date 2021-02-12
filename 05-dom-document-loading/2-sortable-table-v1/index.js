@@ -46,7 +46,7 @@ export default class SortableTable {
     getHeader(header) {
         return header.map((item) => {
             return `
-                <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}" data-order="asc">
+                <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}" data-order="">
                     <span>${item.title}</span>
                 </div>
             `;
