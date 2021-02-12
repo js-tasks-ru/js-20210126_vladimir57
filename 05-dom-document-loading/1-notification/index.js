@@ -1,7 +1,6 @@
 export default class NotificationMessage {
     element;
     timeout;
-    notification = {};
 
     constructor(message, { duration = 0, type } = {}) {
         this.message = message;
