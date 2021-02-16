@@ -85,7 +85,7 @@ export default class SortableTable {
 
     sort(field, order) {
         this.element.querySelectorAll('.sortable-table__cell').forEach(item => {
-          item.dataset.order = '';
+            item.dataset.order = '';
         });
         this.element.querySelector(`.sortable-table__cell[data-id="${field}"]`).dataset.order = order;
         const sortedData = this.sortData(field, order);
