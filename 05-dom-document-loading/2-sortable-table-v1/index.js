@@ -1,6 +1,6 @@
 export default class SortableTable {
     element;
-    timeout;
+    subElements;
 
     constructor(header = [], { data = [] } = {}) {
         this.header = header;
@@ -12,6 +12,7 @@ export default class SortableTable {
         const element = document.createElement('div');
         element.innerHTML = this.template;
         this.element = element.firstElementChild;
+        this.subElements = this.getSubElements();
     }
 
     get template() {
@@ -25,7 +26,7 @@ export default class SortableTable {
                 
                     <div data-element="body" class="sortable-table__body">
 
-                        ${this.getData(this.header, this.data)}
+                        ${this.getBody(this.data)}
 
                     </div>
                 
@@ -43,33 +44,71 @@ export default class SortableTable {
         `;
     }
 
-    getHeader(header) {
-        return header.map((item) => {
+    getSubElements() {
+        const elements = this.element.querySelectorAll('[data-element]');
+        return [...elements].reduce((accumulator, current) => {
+            accumulator[current.dataset.element] = current;
+            return accumulator;
+        }, {});
+    }
+
+    getHeader(header = []) {
+        return header.map((item) => { 
             return `
-                <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}" data-order="">
+                <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}">
                     <span>${item.title}</span>
+                    <span data-element="arrow" class="sortable-table__sort-arrow">
+                        <span class="sort-arrow"></span>
+                    </span>
                 </div>
             `;
         }).join('');
     }
-    getData(header, data) {
-        console.log(header, data);
-        return data.map((row) => {
-            const select = [];
-            header.forEach((col) => {
-                if (col.id in row) {
-                    const value = row[col.id];
-                    if (col.template) {
-                        select.push(col.template(value));
-                    } else {
-                        select.push(`<div class="sortable-table__cell">${value}</div>`);
-                    }
-                }
-            });
+    
+    getBody(data = []) {
+        return data.map((item) => {
             return `
-                <a href="#" class="sortable-table__row">${select.join('')}</a>
+                <a href="/products/${item.id}" class="sortable-table__row">
+                    ${this.getRow(item)}
+                </a>
             `;
         }).join('');
+    }
+
+    getRow(row) {
+        return this.header.map((item) => {
+            return item.template ? item.template(row.images) : `
+                <div class="sortable-table__cell">${row[item.id]}</div>
+            `;
+        }).join('');
+    }
+
+    sort(field, order) {
+        this.element.querySelectorAll('.sortable-table__cell').forEach(item => {
+          item.dataset.order = '';
+        });
+        this.element.querySelector(`.sortable-table__cell[data-id="${field}"]`).dataset.order = order;
+        const sortedData = this.sortData(field, order);
+        this.subElements.body.innerHTML = this.getBody(sortedData);
+    }
+    
+    sortData(field, order) {
+        const direction = ({ asc: 1, desc: -1 })[order];
+        if (direction === undefined) {
+            return this.data;
+        }
+        const collator = new Intl.Collator(['ru', 'en'], { numeric: true, caseFirst: 'upper' });
+        const sortType = this.header.find((item) => { return item.id === field })?.sortType;
+        return [...this.data].sort((a, b) => {
+            switch (sortType) {
+            case 'string':
+                return direction * collator.compare(a[field], b[field]);
+            case 'number':
+                return direction * (a[field] - b[field]);
+            default:
+                return direction * (a[field] - b[field]);
+            }
+        });
     }
 
     remove() {
@@ -78,7 +117,7 @@ export default class SortableTable {
 
     destroy() {
         this.remove();
-        this.notification = {};
+        this.subElements = {};
     }
 }
 
