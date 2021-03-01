@@ -119,7 +119,7 @@ export default class SortableTable {
         `;
     }
     getHeaderSortingArrow(id) {
-        const isOrderExist = this.sorting.id === id ? this.sorting.order : '';
+        const isOrderExist = ((this.sorting.id === id) ? this.sorting.order : '');
         return ((isOrderExist) ? `
             <span data-element="arrow" class="sortable-table__sort-arrow">
                 <span class="sort-arrow"></span>
