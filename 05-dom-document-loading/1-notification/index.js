@@ -1,6 +1,6 @@
 export default class NotificationMessage {
     element;
-    current;
+    isNotification;
     timeout;
 
     constructor(message, { duration = 0, type } = {}) {
@@ -29,14 +29,16 @@ export default class NotificationMessage {
     }
 
     show(target = document.body) {
-        if (this.constructor.current) {
-            this.constructor.current.remove(); 
+        if (this.constructor.isNotification) {
+            return;
         }
-        this.constructor.current = target.appendChild(this.element);
+        this.constructor.isNotification = true;
+        target.append(this.element);
         if (this.constructor.timeout) {
             clearTimeout(this.constructor.timeout);
         };
         this.constructor.timeout = setTimeout(() => {
+            this.constructor.isNotification = false;
             this.remove();
         }, this.duration);
     }
